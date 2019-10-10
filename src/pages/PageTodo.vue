@@ -2,44 +2,35 @@
   <q-page class="q-pa-md">
     <p>Todo Page</p>
     <q-list separator bordered>
-      <q-item
-        clickable
-        :class="!task.completed ? 'bg-yellow-2' : 'bg-grey-2'"
-        @click="task.completed = !task.completed"
-        v-for="task in tasks"
-        :key="task.id"
-        v-ripple
-      >
-        <q-item-section side top>
-          <q-checkbox v-model="task.completed" />
-        </q-item-section>
-
-        <q-item-section>
-          <q-item-label :class="{'text-strikethrough' : task.completed}">{{task.name}}</q-item-label>
-        </q-item-section>
-
-        <q-item-section side>
-          <div class="row">
-            <div class="column justify-center">
-          <q-icon name="event" size="1.25rem" class="q-mr-xs" />
-          </div>
-          <div class="column">
-          <q-item-label class="row justify-end" caption>{{task.dueDate}}</q-item-label>
-          <q-item-label class="row justify-end" caption><small>{{task.dueTime}}</small></q-item-label>
-          </div>
-          </div>
-        </q-item-section>
-      </q-item>
+      <Task v-for="(task, key) in tasks" :key="key" :task="task" :id="key"></Task>
     </q-list>
+
+    <div class="absolute-bottom text-center q-mb-lg">
+      <q-btn @click="showAddTask = true" round color="primary" size="24px" icon="add" />
+    </div>
+
+  <q-dialog v-model="showAddTask">
+    <AddTask />
+    </q-dialog>
+
   </q-page>
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
+  data() {
+    return {
+      showAddTask: true
+    }
+  },
   computed: {
-    ...mapGetters('tasks', ['tasks'])
+    ...mapGetters("tasks", ["tasks"])
+  },
+  components: {
+    Task: require("components/Tasks/Task.vue").default,
+    AddTask: require("components/Tasks/Modals/AddTask.vue").default
   }
 };
 </script>
