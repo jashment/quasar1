@@ -1,7 +1,6 @@
 <template>
   <q-page class="q-pa-md">
-    <p>Todo Page</p>
-    <q-list separator bordered>
+    <q-list v-if="Object.keys(tasks).length" separator bordered>
       <Task v-for="(task, key) in tasks" :key="key" :task="task" :id="key"></Task>
     </q-list>
 
@@ -9,10 +8,9 @@
       <q-btn @click="showAddTask = true" round color="primary" size="24px" icon="add" />
     </div>
 
-  <q-dialog v-model="showAddTask">
-    <AddTask />
+    <q-dialog v-model="showAddTask">
+      <AddTask @close="showAddTask = false" />
     </q-dialog>
-
   </q-page>
 </template>
 
@@ -22,8 +20,8 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      showAddTask: true
-    }
+      showAddTask: false
+    };
   },
   computed: {
     ...mapGetters("tasks", ["tasks"])

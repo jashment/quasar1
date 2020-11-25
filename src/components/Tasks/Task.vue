@@ -13,7 +13,7 @@
       <q-item-label :class="{'text-strikethrough' : task.completed}">{{task.name}}</q-item-label>
     </q-item-section>
 
-    <q-item-section side>
+    <q-item-section v-if="task.dueDate" side>
       <div class="row">
         <div class="column justify-center">
           <q-icon name="event" size="1.25rem" class="q-mr-xs" />
@@ -39,7 +39,7 @@ import { mapActions } from "vuex";
 export default {
   props: ["task", "id"],
   methods: {
-    ...mapActions("tasks", ['updateTask', 'deleteTask']),
+    ...mapActions("tasks", ["updateTask", "deleteTask"]),
     promptToDelete(id) {
       this.$q
         .dialog({
@@ -49,8 +49,8 @@ export default {
           persistent: true
         })
         .onOk(() => {
-          this.deleteTask(id)
-        })
+          this.deleteTask(id);
+        });
     }
   }
 };

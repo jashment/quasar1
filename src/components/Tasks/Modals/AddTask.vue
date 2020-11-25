@@ -6,48 +6,55 @@
       <q-btn flat round icon="close" dense v-close-popup />
     </q-card-section>
 
-    <q-form @submit="submitForm">
-
+    <q-form @submit.prevent="submitForm">
       <q-card-section>
-      <div class="row q-mb-sm">
-        <q-input outlined v-model="taskToSubmit.name" :rules="[val => !!val || 'Field is Required']" label="Task Name" class="col" />
-      </div>
+        <div class="row q-mb-sm">
+          <q-input
+            clearable
+            outlined
+            v-model="taskToSubmit.name"
+            :rules="[val => !!val || 'Field is Required']"
+            autofocus
+            label="Task Name"
+            class="col"
+            ref="name"
+          />
+        </div>
 
-      <div class="row q-mb-sm">
-        <q-input outlined v-model="taskToSubmit.dueDate" label="Due Date">
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                <q-date v-model="taskToSubmit.dueDate" @input="() => $refs.qDateProxy.hide()" />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-      </div>
+        <div class="row q-mb-sm">
+          <q-input clearable outlined v-model="taskToSubmit.dueDate" label="Due Date">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                  <q-date v-model="taskToSubmit.dueDate" @input="() => $refs.qDateProxy.hide()" />
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
 
-      <div class="row q-mb-sm">
-        <q-input outlined v-model="taskToSubmit.dueTime" label="Due Time">
-          <template v-slot:append>
-            <q-icon name="access_time" class="cursor-pointer">
-              <q-popup-proxy transition-show="scale" transition-hide="scale">
-                <q-time v-model="taskToSubmit.dueTime" />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-      </div>
-    </q-card-section>
+        <div v-if="taskToSubmit.dueDate" class="row q-mb-sm">
+          <q-input clearable outlined v-model="taskToSubmit.dueTime" label="Due Time" class="col">
+            <template v-slot:append>
+              <q-icon name="access_time" class="cursor-pointer">
+                <q-popup-proxy transition-show="scale" transition-hide="scale">
+                  <q-time v-model="taskToSubmit.dueTime" />
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+      </q-card-section>
 
-    <q-card-actions align="right">
-      <q-btn flat label="Save" color="primary" v-close-popup />
-    </q-card-actions>
-
+      <q-card-actions align="right">
+        <q-btn label="Save" color="primary" type="submit" />
+      </q-card-actions>
     </q-form>
-
   </q-card>
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -60,8 +67,16 @@ export default {
     };
   },
   methods: {
+    ...mapActions("tasks", ["addTask"]),
     submitForm() {
-      console.log('Submitted')
+      this.$refs.name.validate;
+      if (!this.$refs.name.hasError) {
+        this.submitTask();
+      }
+    },
+    submitTask() {
+      this.addTask(this.taskToSubmit);
+      this.$emit("close");
     }
   }
 };
