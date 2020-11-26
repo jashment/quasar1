@@ -2,7 +2,7 @@
   <q-item
     clickable
     :class="!task.completed ? 'bg-yellow-2' : 'bg-grey-2'"
-    @click="updateTask({ id: id, updates: {completed: !task.completed}})"
+    @click="updateTask({ id: id, updates: { completed: !task.completed } })"
     v-ripple
   >
     <q-item-section side top>
@@ -10,7 +10,9 @@
     </q-item-section>
 
     <q-item-section>
-      <q-item-label :class="{'text-strikethrough' : task.completed}">{{task.name}}</q-item-label>
+      <q-item-label :class="{ 'text-strikethrough': task.completed }">{{
+        task.name
+      }}</q-item-label>
     </q-item-section>
 
     <q-item-section v-if="task.dueDate" side>
@@ -19,17 +21,39 @@
           <q-icon name="event" size="1.25rem" class="q-mr-xs" />
         </div>
         <div class="column">
-          <q-item-label class="row justify-end" caption>{{task.dueDate}}</q-item-label>
+          <q-item-label class="row justify-end" caption>{{
+            task.dueDate
+          }}</q-item-label>
           <q-item-label class="row justify-end" caption>
-            <small>{{task.dueTime}}</small>
+            <small>{{ task.dueTime }}</small>
           </q-item-label>
         </div>
       </div>
     </q-item-section>
 
     <q-item-section side>
-      <q-btn @click.stop="promptToDelete(id)" flat round dense color="red" icon="delete" />
+      <div class="row">
+        <q-btn
+          @click.stop="showEditTask = true"
+          flat
+          round
+          dense
+          color="primary"
+          icon="edit"
+        />
+        <q-btn
+          @click.stop="promptToDelete(id)"
+          flat
+          round
+          dense
+          color="red"
+          icon="delete"
+        />
+      </div>
     </q-item-section>
+    <q-dialog v-model="showEditTask">
+      <edit-task :task="task" :id="id" @close="showEditTask = false" />
+    </q-dialog>
   </q-item>
 </template>
 
@@ -38,6 +62,9 @@ import { mapActions } from "vuex";
 
 export default {
   props: ["task", "id"],
+  data() {
+    return { showEditTask: false };
+  },
   methods: {
     ...mapActions("tasks", ["updateTask", "deleteTask"]),
     promptToDelete(id) {
@@ -46,13 +73,16 @@ export default {
           title: "Confirm",
           message: "Would you really like to delete?",
           cancel: true,
-          persistent: true
+          persistent: true,
         })
         .onOk(() => {
           this.deleteTask(id);
         });
-    }
-  }
+    },
+  },
+  components: {
+    "edit-task": require("components/Tasks/Modals/EditTask.vue").default,
+  },
 };
 </script>
 
