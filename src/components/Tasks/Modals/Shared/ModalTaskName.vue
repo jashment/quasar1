@@ -1,7 +1,6 @@
 <template>
   <div class="row q-mb-sm">
     <q-input
-      clearable
       outlined
       :value="name"
       @input="$emit('update:name', $event)"
