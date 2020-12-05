@@ -1,6 +1,7 @@
 <template>
   <q-item
     clickable
+    v-touch-hold:750.mouse="showEditTaskModal"
     :class="!task.completed ? 'bg-yellow-2' : 'bg-grey-2'"
     @click="updateTask({ id: id, updates: { completed: !task.completed } })"
     v-ripple
@@ -10,9 +11,10 @@
     </q-item-section>
 
     <q-item-section>
-      <q-item-label :class="{ 'text-strikethrough': task.completed }">{{
-        task.name
-      }}</q-item-label>
+      <q-item-label
+        v-html="$options.filters.searchHighlight(task.name, search)"
+        :class="{ 'text-strikethrough': task.completed }"
+      ></q-item-label>
     </q-item-section>
 
     <q-item-section v-if="task.dueDate" side>
@@ -22,7 +24,7 @@
         </div>
         <div class="column">
           <q-item-label class="row justify-end" caption>{{
-            task.dueDate
+            task.dueDate | niceDate
           }}</q-item-label>
           <q-item-label class="row justify-end" caption>
             <small>{{ task.dueTime }}</small>
@@ -34,7 +36,7 @@
     <q-item-section side>
       <div class="row">
         <q-btn
-          @click.stop="showEditTask = true"
+          @click.stop="showEditTaskModal"
           flat
           round
           dense
@@ -58,8 +60,9 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-
+import { mapActions, mapState } from "vuex";
+import { date } from "quasar";
+const { formatDate } = date;
 export default {
   props: ["task", "id"],
   data() {
@@ -79,9 +82,29 @@ export default {
           this.deleteTask(id);
         });
     },
+    showEditTaskModal() {
+      this.showEditTask = true;
+    },
   },
   components: {
     "edit-task": require("components/Tasks/Modals/EditTask.vue").default,
+  },
+  filters: {
+    niceDate(value) {
+      return formatDate(value, "MMM-D");
+    },
+    searchHighlight(value, search) {
+      let searchRegex = new RegExp(search, "ig");
+      if (search) {
+        return value.replace(searchRegex, (match) => {
+          return '<span class="bg-yellow-6">' + match + "</span>";
+        });
+      }
+      return value;
+    },
+  },
+  computed: {
+    ...mapState("tasks", ["search"]),
   },
 };
 </script>

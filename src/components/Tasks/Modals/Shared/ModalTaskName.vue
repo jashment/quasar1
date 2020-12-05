@@ -9,6 +9,7 @@
       label="Task Name"
       class="col"
       ref="name"
+      v-select-all
     >
       <template v-slot:append>
         <q-icon
@@ -23,7 +24,11 @@
 </template>
 
 <script>
+import {selectAll} from 'src/directives/directive-select-all.js'
 export default {
   props: ["name"],
+  directives: {
+    selectAll
+  },
 };
 </script>
